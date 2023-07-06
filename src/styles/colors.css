@@ -1,0 +1,12 @@
+@import 'light-colors.css';
+@import 'dark-colors.css';
+
+body {
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+
+a {
+	color: var(--link-color);
+}
+

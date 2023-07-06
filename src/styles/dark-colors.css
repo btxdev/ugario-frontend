@@ -1,0 +1,12 @@
+@media (prefers-color-scheme: dark) {
+	:root {
+		--text-color: #fff;
+		--background-color: #333;
+		--link-color: #2196f3;
+	}
+}
+:root[data-force-color-mode="dark"] {
+	--text-color: #fff;
+	--background-color: #333;
+	--link-color: #2196f3;
+}
