@@ -13,6 +13,7 @@ export default class Game {
     private _player: Ameba;
     private _camera: Camera;
     private _food: Array<Food>;
+    private _enemies: Array<Ameba>;
     private _worldBorder: Point;
     private _mouseMove: any;
     private _mouse: Point;
@@ -36,6 +37,13 @@ export default class Game {
             this._food.push(new Food({
                 x: Math.random() * this._worldBorder.x,
                 y: Math.random() * this._worldBorder.y,
+            }))
+        }
+        this._enemies = []
+        for (let i = 0; i < 1; i++) {
+            this._enemies.push(new Ameba({
+                x: this._worldBorder.x - 100,
+                y: this._worldBorder.y - 100,
             }))
         }
         this._mouse = {x: 0, y: 0}
@@ -69,9 +77,14 @@ export default class Game {
         this._mouse.y = event.clientY
     }
     
-    private _render() {
-        // const heatmap = new Heatmap(this._worldBorder.x, this._worldBorder.y, 25);
+    private _isFoodNear(entity: Ameba, food: Food): boolean {
+        const distancePoint = diffPoints(entity.pos, food.pos);
+        const distanceVector = new Vector(distancePoint.x, distancePoint.y);
+        const distance = distanceVector.length;
+        return (distance < entity.radius + food.radius)
+    }
 
+    private _render() {
         // player movement
         const mouseDirPoint = diffPoints(this.center, this._mouse);
         let mouseDir = new Vector(mouseDirPoint.x, mouseDirPoint.y);
@@ -103,24 +116,47 @@ export default class Game {
         // food
         for (let i = 0; i < this._food.length; i++) {
             const foodEntity = this._food[i];
-            // foodEntity.update()
-            const distancePoint = diffPoints(this._player.pos, foodEntity.pos);
-            const distanceVector = new Vector(distancePoint.x, distancePoint.y);
-            const distance = distanceVector.length;
-            if (distance < this._player.radius + foodEntity.radius) {
+            // eat by player
+            if (this._isFoodNear(this._player, foodEntity)) {
                 this._food.splice(i, 1);
                 i--;
                 this._player.addWeight(1);
                 continue;
             }
+            // eat by enemies
+            for (const enemy of this._enemies) {
+                if (this._isFoodNear(enemy, foodEntity)) {
+                    this._food.splice(i, 1);
+                    i--;
+                    enemy.addWeight(1);
+                    continue;
+                }
+            }
             foodEntity.renderIn(this._context, this._camera)
         }
 
         // enemies
-        //
+
+        for (const enemy of this._enemies) {
+            enemy.closestFood = this._food[0].pos;
+            // this._context.beginPath();
+            // this._context.strokeStyle = 'red';
+            // this._context.lineWidth = 10;
+            // const p0 = pointFromCameraView(enemy.pos, this._camera, this._context);
+            // const p1 = pointFromCameraView(enemy.closestFood, this._camera, this._context);
+            // this._context.moveTo(p0.x, p0.y);
+            // this._context.lineTo(p1.x, p1.y);
+            // this._context.stroke();
+            // this._context.closePath();
+            const p = diffPoints(enemy.pos, enemy.closestFood);
+            const v = new Vector(p.x, p.y);
+            v.divide(v.length)
+            enemy.moveTo(v);
+            enemy.update();
+            enemy.renderIn(this._context, this._camera)
+        }
 
         // player
-        // heatmap.add(this._player.pos.x, this._player.pos.y, this._player.weight)
         this._player.update()
         this._player.renderIn(this._context, this._camera)
         

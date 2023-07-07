@@ -12,6 +12,8 @@ export class Ameba {
     private _animWavePhase0Accel: number;
     private _worldBorder: Point;
     private _weight: number;
+    public closestEnemy: Point;
+    public closestFood: Point;
     constructor(pos: Point) {
         this.pos = pos;
         this.vel = new Vector(0, 0)
@@ -21,6 +23,8 @@ export class Ameba {
         this._animWavePhase0Accel = 0.05;
         this._worldBorder = {x: 1000, y: 1000}
         this._weight = 10;
+        this.closestEnemy = {x: Infinity, y: Infinity}
+        this.closestFood = {x: Infinity, y: Infinity}
     }
     public moveTo(dir: Vector) {
         this.targetVelocity = dir;
