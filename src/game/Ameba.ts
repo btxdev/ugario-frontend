@@ -1,7 +1,7 @@
 import { Point, sumPoints, diffPoints, rotatePointAround } from './Point'
 import { Camera } from './Camera'
-import { Vector, sumVectors, diffVectors } from './Vector'
-import { pointFromCameraView } from './utils.ts'
+import { Vector, sumVectors } from './Vector'
+import { pointFromCameraView, clamp } from './utils.ts'
 
 export class Ameba {
     public pos: Point;
@@ -10,6 +10,7 @@ export class Ameba {
     public targetVelocity: Vector;
     private _animWavePhase0: number;
     private _animWavePhase0Accel: number;
+    private _worldBorder: Point;
     constructor(pos: Point) {
         this.pos = pos;
         this.vel = new Vector(0, 0)
@@ -17,6 +18,7 @@ export class Ameba {
         this.targetVelocity = new Vector(0, 0)
         this._animWavePhase0 = 0;
         this._animWavePhase0Accel = 0.05;
+        this._worldBorder = {x: 1000, y: 1000}
     }
     public moveTo(dir: Vector) {
         this.targetVelocity = dir;
@@ -28,6 +30,8 @@ export class Ameba {
         this.vel.clamp(0, 8)
         this.vel.multiply(0.9)
         this.pos = sumPoints(this.pos, this.vel.asPoint)
+        this.pos.x = clamp(this.pos.x, 0, this._worldBorder.x)
+        this.pos.y = clamp(this.pos.y, 0, this._worldBorder.y)
         this._animWavePhase0 += this._animWavePhase0Accel;
     }
     public renderIn(context: CanvasRenderingContext2D, cam: Camera): void {
@@ -56,5 +60,8 @@ export class Ameba {
         context.fill()
         context.stroke()
         context.closePath()
+    }
+    set worldBorder(border: Point) {
+        this._worldBorder = border
     }
 }

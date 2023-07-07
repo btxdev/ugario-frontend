@@ -4,6 +4,7 @@ import { Camera } from './Camera'
 import { Rect } from './Rect.ts'
 import { Ameba } from './Ameba.ts'
 import { Food } from './Food.ts'
+import { pointFromCameraView } from './utils.ts'
 
 export default class Game {
     private _canvas: HTMLCanvasElement;
@@ -22,11 +23,12 @@ export default class Game {
             throw new Error('canvas 2d context cannot be null')
         }
         this._context = context2d
-        this._worldBorder = {x: 5000, y: 5000}
+        this._worldBorder = {x: 1000, y: 1000}
         this._player = new Ameba({
             x: this._worldBorder.x / 2,
             y: this._worldBorder.y / 2
         })
+        this._player.worldBorder = this._worldBorder
         this._camera = new Camera(this._player.pos.x, this._player.pos.y, 1);
         this._food = []
         for (let i = 0; i < 50; i++) {
@@ -67,10 +69,6 @@ export default class Game {
     }
     
     private _render() {
-        // background
-        this._context.fillStyle = 'white'
-        this._context.fillRect(0, 0, this.w, this.h)
-
         // player movement
         const mouseDirPoint = diffPoints(this.center, this._mouse);
         let mouseDir = new Vector(mouseDirPoint.x, mouseDirPoint.y);
@@ -78,28 +76,34 @@ export default class Game {
         if (mouseDir.isInRange(0, 100)) mouseDir = new Vector(0, 0);
         mouseDir.divide(500)
         this._player.moveTo(mouseDir)
-        // console.log(mouseDir.asPoint)
-        // mouseDir.multiply(-1)
-        // mouseDir.multiply(0.0004)
-        // this._player.targetVelocity = mouseDir;
 
         // camera movement
-        // const camDirPoint = diffPoints(this._camera, this._player.pos);
-        // const camDir = new Vector(camDirPoint.x, camDirPoint.y);
-        // camDir.multiplyDummy(-0.1)
-        // this._camera.x += camDir.asPoint.x
-        // this._camera.y += camDir.asPoint.y
         this._camera.p = this._player.pos
 
-        // logic
-        this._player.tick()
+        // draw background
+        this._context.fillStyle = 'white'
+        this._context.fillRect(0, 0, this.w, this.h)
 
-        // draw food
+        // draw borders
+        const border0 = pointFromCameraView({x: 0, y: 0}, this._camera, this._context)
+        const border1 = pointFromCameraView(this._worldBorder, this._camera, this._context)
+        this._context.fillStyle = 'black'
+        this._context.fillRect(border0.x, border0.y, 2, border1.y - border0.y)
+        this._context.fillRect(border1.x, border0.y, 2, border1.y - border0.y)
+        this._context.fillRect(border0.x, border0.y, border1.x - border0.x, 2)
+        this._context.fillRect(border0.x, border1.y, border1.x - border0.x, 2)
+
+        // food
         for (const foodEntity of this._food) {
+            // foodEntity.tick()
             foodEntity.renderIn(this._context, this._camera)
         }
 
-        // draw player
+        // enemies
+        //
+
+        // player
+        this._player.tick()
         this._player.renderIn(this._context, this._camera)
         
         requestAnimationFrame(this._render.bind(this))
