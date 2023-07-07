@@ -11,6 +11,7 @@ export class Ameba {
     private _animWavePhase0: number;
     private _animWavePhase0Accel: number;
     private _worldBorder: Point;
+    private _weight: number;
     constructor(pos: Point) {
         this.pos = pos;
         this.vel = new Vector(0, 0)
@@ -19,6 +20,7 @@ export class Ameba {
         this._animWavePhase0 = 0;
         this._animWavePhase0Accel = 0.05;
         this._worldBorder = {x: 1000, y: 1000}
+        this._weight = 10;
     }
     public moveTo(dir: Vector) {
         this.targetVelocity = dir;
@@ -30,14 +32,14 @@ export class Ameba {
         this.vel.clamp(0, 8)
         this.vel.multiply(0.9)
         this.pos = sumPoints(this.pos, this.vel.asPoint)
-        this.pos.x = clamp(this.pos.x, 0, this._worldBorder.x)
-        this.pos.y = clamp(this.pos.y, 0, this._worldBorder.y)
+        this.pos.x = clamp(this.pos.x, this.radius, this._worldBorder.x - this.radius)
+        this.pos.y = clamp(this.pos.y, this.radius, this._worldBorder.y - this.radius)
         this._animWavePhase0 += this._animWavePhase0Accel;
     }
     public renderIn(context: CanvasRenderingContext2D, cam: Camera): void {
         context.beginPath()
         const origin = this.pos;
-        const radius: number = 100;
+        const radius: number = this.radius;
         const vertices: number = 48;
         let p0: Point = sumPoints(origin, {x: 0, y: -radius})
         let p0view: Point = pointFromCameraView(p0, cam, context)
@@ -63,5 +65,17 @@ export class Ameba {
     }
     set worldBorder(border: Point) {
         this._worldBorder = border
+    }
+    set weight(value: number) {
+        this._weight = value
+    }
+    get weight(): number {
+        return this._weight
+    }
+    get radius(): number {
+        return this._weight * 6
+    }
+    set radius(value: number) {
+        this._weight = value / 6
     }
 }

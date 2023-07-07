@@ -80,6 +80,9 @@ export default class Game {
         // camera movement
         this._camera.p = this._player.pos
 
+        // camera fov
+        this._camera.fov = (1 / this._player.weight) * 20;
+
         // draw background
         this._context.fillStyle = 'white'
         this._context.fillRect(0, 0, this.w, this.h)
