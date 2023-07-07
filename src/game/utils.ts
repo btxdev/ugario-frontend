@@ -1,9 +1,10 @@
 import { Point } from "./Point"
+import { Camera } from "./Camera"
 
-export function pointFromCameraView(p: Point, cam: Point, ctx: CanvasRenderingContext2D): Point {
+export function pointFromCameraView(p: Point, cam: Camera, ctx: CanvasRenderingContext2D): Point {
     return {
-        x: ctx.canvas.width / 2 + p.x - cam.x,
-        y: ctx.canvas.height / 2 + p.y - cam.y,
+        x: ctx.canvas.width / 2 + (p.x - cam.p.x) * cam.fov,
+        y: ctx.canvas.height / 2 + (p.y - cam.p.y) * cam.fov,
     }
 }
 

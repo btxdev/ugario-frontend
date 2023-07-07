@@ -1,4 +1,5 @@
 import { Point, sumPoints, rotatePointAround } from './Point'
+import { Camera } from "./Camera"
 
 import { pointFromCameraView } from './utils.ts'
 
@@ -9,7 +10,7 @@ export class Food {
         this.pos = pos;
         this.colorAngle = Math.round(Math.random() * 360)
     }
-    public renderIn(context: CanvasRenderingContext2D, cam: Point): void {
+    public renderIn(context: CanvasRenderingContext2D, cam: Camera): void {
         context.beginPath()
         const origin = this.pos;
         const radius: number = 20;

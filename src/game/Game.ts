@@ -1,5 +1,6 @@
 import { Point, sumPoints, diffPoints } from './Point.ts'
 import { Vector, sumVectors } from './Vector'
+import { Camera } from './Camera'
 import { Rect } from './Rect.ts'
 import { Ameba } from './Ameba.ts'
 import { Food } from './Food.ts'
@@ -8,7 +9,7 @@ export default class Game {
     private _canvas: HTMLCanvasElement;
     private _context: CanvasRenderingContext2D;
     private _player: Ameba;
-    private _camera: Point;
+    private _camera: Camera;
     private _food: Array<Food>;
     private _worldBorder: Point;
     private _mouseMove: any;
@@ -21,17 +22,14 @@ export default class Game {
             throw new Error('canvas 2d context cannot be null')
         }
         this._context = context2d
-        this._worldBorder = {x: 1000, y: 1000}
+        this._worldBorder = {x: 5000, y: 5000}
         this._player = new Ameba({
             x: this._worldBorder.x / 2,
             y: this._worldBorder.y / 2
         })
-        this._camera = {
-            x: this._player.pos.x,
-            y: this._player.pos.y,
-        }
+        this._camera = new Camera(this._player.pos.x, this._player.pos.y, 1);
         this._food = []
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 50; i++) {
             this._food.push(new Food({
                 x: Math.random() * this._worldBorder.x,
                 y: Math.random() * this._worldBorder.y,
@@ -91,7 +89,7 @@ export default class Game {
         // camDir.multiplyDummy(-0.1)
         // this._camera.x += camDir.asPoint.x
         // this._camera.y += camDir.asPoint.y
-        this._camera = this._player.pos
+        this._camera.p = this._player.pos
 
         // logic
         this._player.tick()

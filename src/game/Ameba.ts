@@ -1,4 +1,5 @@
 import { Point, sumPoints, diffPoints, rotatePointAround } from './Point'
+import { Camera } from './Camera'
 import { Vector, sumVectors, diffVectors } from './Vector'
 import { pointFromCameraView } from './utils.ts'
 
@@ -29,7 +30,7 @@ export class Ameba {
         this.pos = sumPoints(this.pos, this.vel.asPoint)
         this._animWavePhase0 += this._animWavePhase0Accel;
     }
-    public renderIn(context: CanvasRenderingContext2D, cam: Point): void {
+    public renderIn(context: CanvasRenderingContext2D, cam: Camera): void {
         context.beginPath()
         const origin = this.pos;
         const radius: number = 100;
