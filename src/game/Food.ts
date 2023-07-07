@@ -30,7 +30,7 @@ export class Food {
         context.lineTo(p0view.x, p0view.y);
         context.fillStyle = `hsl(${this.colorAngle}, 79%, 63%)`
         context.strokeStyle = `hsl(${this.colorAngle}, 85%, 52%)`
-        context.lineWidth = 4
+        context.lineWidth = cam.fov * 6
         context.fill()
         context.stroke()
         context.closePath()

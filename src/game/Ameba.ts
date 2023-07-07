@@ -62,7 +62,7 @@ export class Ameba {
         context.lineTo(p0view.x, p0view.y);
         context.fillStyle = '#eb7957'
         context.strokeStyle = '#ed4c1c'
-        context.lineWidth = 8
+        context.lineWidth = cam.fov * 10 + this._weight * 0.1
         context.fill()
         context.stroke()
         context.closePath()

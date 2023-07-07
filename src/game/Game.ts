@@ -25,7 +25,7 @@ export default class Game {
             throw new Error('canvas 2d context cannot be null')
         }
         this._context = context2d
-        this._worldBorder = {x: 1000, y: 1000}
+        this._worldBorder = {x: 3000, y: 3000}
         this._player = new Ameba({
             x: this._worldBorder.x / 2,
             y: this._worldBorder.y / 2
@@ -33,7 +33,7 @@ export default class Game {
         this._player.worldBorder = this._worldBorder
         this._camera = new Camera(this._player.pos.x, this._player.pos.y, 1);
         this._food = []
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 200; i++) {
             this._food.push(new Food({
                 x: Math.random() * this._worldBorder.x,
                 y: Math.random() * this._worldBorder.y,
@@ -42,8 +42,8 @@ export default class Game {
         this._enemies = []
         for (let i = 0; i < 1; i++) {
             this._enemies.push(new Ameba({
-                x: this._worldBorder.x - 100,
-                y: this._worldBorder.y - 100,
+                x: Math.random() * this._worldBorder.x,
+                y: Math.random() * this._worldBorder.y,
             }))
         }
         this._mouse = {x: 0, y: 0}
@@ -98,6 +98,7 @@ export default class Game {
 
         // camera fov
         this._camera.fov = (1 / this._player.weight) * 20;
+        // this._camera.fov = 0.2;
         this._camera.update()
 
         // draw background
@@ -129,7 +130,7 @@ export default class Game {
                     this._food.splice(i, 1);
                     i--;
                     enemy.addWeight(1);
-                    continue;
+                    break;
                 }
             }
             foodEntity.renderIn(this._context, this._camera)
@@ -138,7 +139,7 @@ export default class Game {
         // enemies
 
         for (const enemy of this._enemies) {
-            enemy.closestFood = this._food[0].pos;
+            if (this._food.length > 0) enemy.closestFood = this._food[0].pos;
             // this._context.beginPath();
             // this._context.strokeStyle = 'red';
             // this._context.lineWidth = 10;
