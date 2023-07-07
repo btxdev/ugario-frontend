@@ -25,7 +25,7 @@ export class Ameba {
     public moveTo(dir: Vector) {
         this.targetVelocity = dir;
     }
-    public tick() {
+    public update() {
         this.acc = this.targetVelocity
         this.acc.multiply(-1)
         this.vel = sumVectors(this.vel, this.acc)
@@ -63,19 +63,16 @@ export class Ameba {
         context.stroke()
         context.closePath()
     }
+    public addWeight(value: number) {
+        this._weight += value;
+    }
     set worldBorder(border: Point) {
         this._worldBorder = border
-    }
-    set weight(value: number) {
-        this._weight = value
     }
     get weight(): number {
         return this._weight
     }
     get radius(): number {
         return this._weight * 6
-    }
-    set radius(value: number) {
-        this._weight = value / 6
     }
 }

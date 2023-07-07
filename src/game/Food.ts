@@ -6,14 +6,16 @@ import { pointFromCameraView } from './utils.ts'
 export class Food {
     public pos: Point;
     public colorAngle: number;
+    public radius: number;
     constructor(pos: Point) {
         this.pos = pos;
         this.colorAngle = Math.round(Math.random() * 360)
+        this.radius = 20;
     }
     public renderIn(context: CanvasRenderingContext2D, cam: Camera): void {
         context.beginPath()
         const origin = this.pos;
-        const radius: number = 20;
+        const radius: number = this.radius;
         const vertices: number = 8;
         let p0: Point = sumPoints(origin, {x: 0, y: -radius})
         let p0view: Point = pointFromCameraView(p0, cam, context)

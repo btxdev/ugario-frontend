@@ -5,6 +5,7 @@ import { Rect } from './Rect.ts'
 import { Ameba } from './Ameba.ts'
 import { Food } from './Food.ts'
 import { pointFromCameraView } from './utils.ts'
+import { Heatmap } from './Heatmap.ts';
 
 export default class Game {
     private _canvas: HTMLCanvasElement;
@@ -69,6 +70,8 @@ export default class Game {
     }
     
     private _render() {
+        // const heatmap = new Heatmap(this._worldBorder.x, this._worldBorder.y, 25);
+
         // player movement
         const mouseDirPoint = diffPoints(this.center, this._mouse);
         let mouseDir = new Vector(mouseDirPoint.x, mouseDirPoint.y);
@@ -82,6 +85,7 @@ export default class Game {
 
         // camera fov
         this._camera.fov = (1 / this._player.weight) * 20;
+        this._camera.update()
 
         // draw background
         this._context.fillStyle = 'white'
@@ -97,8 +101,18 @@ export default class Game {
         this._context.fillRect(border0.x, border1.y, border1.x - border0.x, 2)
 
         // food
-        for (const foodEntity of this._food) {
-            // foodEntity.tick()
+        for (let i = 0; i < this._food.length; i++) {
+            const foodEntity = this._food[i];
+            // foodEntity.update()
+            const distancePoint = diffPoints(this._player.pos, foodEntity.pos);
+            const distanceVector = new Vector(distancePoint.x, distancePoint.y);
+            const distance = distanceVector.length;
+            if (distance < this._player.radius + foodEntity.radius) {
+                this._food.splice(i, 1);
+                i--;
+                this._player.addWeight(1);
+                continue;
+            }
             foodEntity.renderIn(this._context, this._camera)
         }
 
@@ -106,7 +120,8 @@ export default class Game {
         //
 
         // player
-        this._player.tick()
+        // heatmap.add(this._player.pos.x, this._player.pos.y, this._player.weight)
+        this._player.update()
         this._player.renderIn(this._context, this._camera)
         
         requestAnimationFrame(this._render.bind(this))

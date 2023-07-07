@@ -7,13 +7,20 @@ export interface ICamera {
 
 export class Camera {
     private _p: Point
-    public fov: number
+    private _fov: number
+    private _targetFov: number
     constructor(x: number, y: number, fov: number) {
         this._p = {
             x: x,
             y: y,
         }
+        this._fov = fov
+        this._targetFov = fov
         this.fov = fov
+    }
+    update() {
+        const diff: number = this._fov - this._targetFov
+        this._fov += -diff * 0.01
     }
     get p(): Point {
         return this._p
@@ -26,5 +33,11 @@ export class Camera {
     }
     get y(): number {
         return this._p.y
+    }
+    get fov() {
+        return this._fov
+    }
+    set fov(value: number) {
+        this._targetFov = value
     }
 }
