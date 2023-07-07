@@ -29,7 +29,7 @@ export default class Game {
         this._player = new Ameba({
             x: this._worldBorder.x / 2,
             y: this._worldBorder.y / 2
-        })
+        }, this._worldBorder)
         this._player.worldBorder = this._worldBorder
         this._camera = new Camera(this._player.pos.x, this._player.pos.y, 1);
         this._food = []
@@ -44,7 +44,7 @@ export default class Game {
             this._enemies.push(new Ameba({
                 x: Math.random() * this._worldBorder.x,
                 y: Math.random() * this._worldBorder.y,
-            }))
+            }, this._worldBorder))
         }
         this._mouse = {x: 0, y: 0}
         this._mouseMove = this._canvas.addEventListener('mousemove', this._handleMousemove.bind(this))
@@ -137,21 +137,23 @@ export default class Game {
         }
 
         // enemies
-
         for (const enemy of this._enemies) {
             if (this._food.length > 0) enemy.closestFood = this._food[0].pos;
-            // this._context.beginPath();
-            // this._context.strokeStyle = 'red';
-            // this._context.lineWidth = 10;
-            // const p0 = pointFromCameraView(enemy.pos, this._camera, this._context);
-            // const p1 = pointFromCameraView(enemy.closestFood, this._camera, this._context);
-            // this._context.moveTo(p0.x, p0.y);
-            // this._context.lineTo(p1.x, p1.y);
-            // this._context.stroke();
-            // this._context.closePath();
+            this._context.beginPath();
+            this._context.strokeStyle = 'red';
+            this._context.lineWidth = 10;
+            const p0 = pointFromCameraView(enemy.pos, this._camera, this._context);
+            const p1 = pointFromCameraView(enemy.closestFood, this._camera, this._context);
+            this._context.moveTo(p0.x, p0.y);
+            this._context.lineTo(p1.x, p1.y);
+            this._context.stroke();
+            this._context.closePath();
             const p = diffPoints(enemy.pos, enemy.closestFood);
             const v = new Vector(p.x, p.y);
             v.divide(v.length)
+            // v.multiply(10)
+            // v.divide(v.length)
+            // console.log(enemy.vel)
             enemy.moveTo(v);
             enemy.update();
             enemy.renderIn(this._context, this._camera)

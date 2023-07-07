@@ -14,14 +14,14 @@ export class Ameba {
     private _weight: number;
     public closestEnemy: Point;
     public closestFood: Point;
-    constructor(pos: Point) {
+    constructor(pos: Point, border: Point) {
         this.pos = pos;
         this.vel = new Vector(0, 0)
         this.acc = new Vector(0, 0)
         this.targetVelocity = new Vector(0, 0)
         this._animWavePhase0 = 0;
         this._animWavePhase0Accel = 0.05;
-        this._worldBorder = {x: 1000, y: 1000}
+        this._worldBorder = border
         this._weight = 10;
         this.closestEnemy = {x: Infinity, y: Infinity}
         this.closestFood = {x: Infinity, y: Infinity}
