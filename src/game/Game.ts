@@ -1,4 +1,4 @@
-import { Point, sumPoints } from './Point.ts'
+import { Point, sumPoints, diffPoints } from './Point.ts'
 import { Vector, sumVectors } from './Vector'
 import { Rect } from './Rect.ts'
 import { Ameba } from './Ameba.ts'
@@ -11,6 +11,8 @@ export default class Game {
     private _camera: Point;
     private _food: Array<Food>;
     private _worldBorder: Point;
+    private _mouseMove: any;
+    private _mouse: Point;
 
     constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas
@@ -35,6 +37,8 @@ export default class Game {
                 y: Math.random() * this._worldBorder.y,
             }))
         }
+        this._mouse = {x: 0, y: 0}
+        this._mouseMove = this._canvas.addEventListener('mousemove', this._handleMousemove.bind(this))
         this._render.apply(this)
     }
     private get width(): number {
@@ -58,23 +62,48 @@ export default class Game {
     private get c(): Point {
         return this.center
     }
+
+    private _handleMousemove(event: MouseEvent): void {
+        this._mouse.x = event.clientX
+        this._mouse.y = event.clientY
+    }
     
     private _render() {
+        // background
         this._context.fillStyle = 'white'
         this._context.fillRect(0, 0, this.w, this.h)
-        // this._context.fillStyle = 'black'
-        // const rect = new Rect();
-        // rect.fromRadiusPoints(this.c, 100);
-        // this._context.fillRect(...rect.toSizeNumbers())
-        // const ameba = new Ameba({x: 400, y: 400})
-        // this._player.acc = new Vector(0.001, 0.001)
 
+        // player movement
+        const mouseDirPoint = diffPoints(this.center, this._mouse);
+        let mouseDir = new Vector(mouseDirPoint.x, mouseDirPoint.y);
+        mouseDir.clampDummy(-500, 500)
+        if (mouseDir.isInRange(0, 100)) mouseDir = new Vector(0, 0);
+        mouseDir.divide(500)
+        this._player.moveTo(mouseDir)
+        // console.log(mouseDir.asPoint)
+        // mouseDir.multiply(-1)
+        // mouseDir.multiply(0.0004)
+        // this._player.targetVelocity = mouseDir;
+
+        // camera movement
+        // const camDirPoint = diffPoints(this._camera, this._player.pos);
+        // const camDir = new Vector(camDirPoint.x, camDirPoint.y);
+        // camDir.multiplyDummy(-0.1)
+        // this._camera.x += camDir.asPoint.x
+        // this._camera.y += camDir.asPoint.y
+        this._camera = this._player.pos
+
+        // logic
+        this._player.tick()
+
+        // draw food
         for (const foodEntity of this._food) {
             foodEntity.renderIn(this._context, this._camera)
         }
 
-        this._player.tick()
+        // draw player
         this._player.renderIn(this._context, this._camera)
+        
         requestAnimationFrame(this._render.bind(this))
     }
 }

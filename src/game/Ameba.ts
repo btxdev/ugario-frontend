@@ -1,22 +1,31 @@
 import { Point, sumPoints, diffPoints, rotatePointAround } from './Point'
-import { Vector, sumVectors } from './Vector'
+import { Vector, sumVectors, diffVectors } from './Vector'
 import { pointFromCameraView } from './utils.ts'
 
 export class Ameba {
     public pos: Point;
     public vel: Vector;
     public acc: Vector;
+    public targetVelocity: Vector;
     private _animWavePhase0: number;
     private _animWavePhase0Accel: number;
     constructor(pos: Point) {
         this.pos = pos;
         this.vel = new Vector(0, 0)
         this.acc = new Vector(0, 0)
+        this.targetVelocity = new Vector(0, 0)
         this._animWavePhase0 = 0;
         this._animWavePhase0Accel = 0.05;
     }
+    public moveTo(dir: Vector) {
+        this.targetVelocity = dir;
+    }
     public tick() {
+        this.acc = this.targetVelocity
+        this.acc.multiply(-1)
         this.vel = sumVectors(this.vel, this.acc)
+        this.vel.clamp(0, 8)
+        this.vel.multiply(0.9)
         this.pos = sumPoints(this.pos, this.vel.asPoint)
         this._animWavePhase0 += this._animWavePhase0Accel;
     }
@@ -33,7 +42,7 @@ export class Ameba {
             const p1 = rotatePointAround(p0, origin, angle);
             const directionToCenter = diffPoints(p1, origin);
             let directionVector = new Vector(directionToCenter.x, directionToCenter.y);
-            directionVector.multiply(Math.sin(i * 2 + this._animWavePhase0) * 0.05);
+            directionVector.multiplyDummy(Math.sin(i * 2 + this._animWavePhase0) * 0.05);
             const shiftedPoint = sumPoints(p1, directionVector.asPoint)
             const p1view = pointFromCameraView(shiftedPoint, cam, context);
             context.lineTo(p1view.x, p1view.y);
