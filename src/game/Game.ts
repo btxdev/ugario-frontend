@@ -151,9 +151,6 @@ export default class Game {
             const p = diffPoints(enemy.pos, enemy.closestFood);
             const v = new Vector(p.x, p.y);
             v.divide(v.length)
-            // v.multiply(10)
-            // v.divide(v.length)
-            // console.log(enemy.vel)
             enemy.moveTo(v);
             enemy.update();
             enemy.renderIn(this._context, this._camera)
